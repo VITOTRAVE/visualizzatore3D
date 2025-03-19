@@ -2,6 +2,9 @@
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+// Imposta lo sfondo della scena su un colore chiaro
+renderer.setClearColor(0xeeeeee);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -13,10 +16,14 @@ controls.screenSpacePanning = false;
 controls.maxPolarAngle = Math.PI;
 camera.position.z = 5;
 
-// Luce per illuminare il modello
+// Luci per illuminare la scena
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(5, 5, 5).normalize();
 scene.add(light);
+
+// Aggiunta di una luce ambientale per evitare sfondi neri
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
 // Funzione per caricare modelli 3D
 function loadModel(file) {
@@ -25,10 +32,12 @@ function loadModel(file) {
         const contents = event.target.result;
         const fileName = file.name.toLowerCase();
 
+        // Rimuove solo i modelli esistenti senza eliminare le luci
+        scene.children = scene.children.filter(obj => obj.type !== "Mesh" && obj.type !== "Group");
+
         if (fileName.endsWith('.glb') || fileName.endsWith('.gltf')) {
             const loader = new THREE.GLTFLoader();
             loader.parse(contents, '', function (gltf) {
-                scene.clear();
                 scene.add(gltf.scene);
             });
         } else if (fileName.endsWith('.stl')) {
@@ -36,13 +45,11 @@ function loadModel(file) {
             const geometry = loader.parse(contents);
             const material = new THREE.MeshPhongMaterial({ color: 0xaaaaaa });
             const mesh = new THREE.Mesh(geometry, material);
-            scene.clear();
             scene.add(mesh);
         } else if (fileName.endsWith('.obj')) {
             const loader = new THREE.OBJLoader();
             const text = new TextDecoder().decode(contents);
             const object = loader.parse(text);
-            scene.clear();
             scene.add(object);
         } else {
             alert('Formato non supportato');
@@ -91,7 +98,7 @@ document.addEventListener('click', function (event) {
 });
 
 // Caricare modello da GrabCAD
-document.getElementById('loadGrabcad').addEventListener('click', async function() {
+document.getElementById('loadGrabcad').addEventListener('click', async function () {
     const url = document.getElementById('grabcadUrl').value;
     if (!url.includes('grabcad.com')) {
         alert('Inserisci un URL valido di GrabCAD.');
@@ -102,7 +109,6 @@ document.getElementById('loadGrabcad').addEventListener('click', async function(
         const response = await fetch(`https://cors-anywhere.herokuapp.com/${url}`);
         const blob = await response.blob();
         const fileUrl = URL.createObjectURL(blob);
-
         if (url.endsWith('.stl') || url.endsWith('.obj')) {
             loadModelFromUrl(fileUrl);
         }
@@ -112,7 +118,7 @@ document.getElementById('loadGrabcad').addEventListener('click', async function(
 });
 
 // Esportare modello in STL, OBJ o STEP
-document.getElementById('exportModel').addEventListener('click', function() {
+document.getElementById('exportModel').addEventListener('click', function () {
     const format = document.getElementById('exportFormat').value;
     alert(`Esportazione in formato ${format} non implementata ancora!`);
 });
@@ -125,3 +131,10 @@ function animate() {
 }
 
 animate();
+
+// Assicura che il visualizzatore si adatti alla finestra quando viene ridimensionata
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
