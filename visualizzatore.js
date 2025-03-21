@@ -4,123 +4,134 @@ import { STLLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/ST
 import { OBJLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/OBJLoader';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader';
 
-let scene, camera, renderer, controls, grid, cubeHelper;
-let currentModel;
+// Creazione della scena
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-init();
+// Imposta lo sfondo e la dimensione del renderer
+renderer.setClearColor(0xeeeeee);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('container').appendChild(renderer.domElement);
 
-function init() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);
+// Controlli di navigazione
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = true;
+controls.maxPolarAngle = Math.PI;
+camera.position.set(0, 5, 10);
 
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(100, 100, 100);
+// Luci per illuminare la scena
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5, 5, 5).normalize();
+scene.add(light);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('container').appendChild(renderer.domElement);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0, 0);
-    controls.update();
+// ✅ Aggiunta della griglia di sfondo
+const gridHelper = new THREE.GridHelper(100, 20, 0x666666, 0x444444);
+scene.add(gridHelper);
 
-    // **Aggiunta della griglia**
-    grid = new THREE.GridHelper(200, 50);
-    scene.add(grid);
+// ✅ Aggiunta della scritta "Atom Lab CAD 3D"
+const canvas = document.createElement("canvas");
+canvas.width = 400;
+canvas.height = 100;
+const ctx = canvas.getContext("2d");
+ctx.font = "bold 30px Arial";
+ctx.fillStyle = "red";
+ctx.strokeStyle = "white";
+ctx.lineWidth = 5;
+ctx.strokeText("Atom Lab CAD 3D", 20, 50);
+ctx.fillText("Atom Lab CAD 3D", 20, 50);
+const texture = new THREE.CanvasTexture(canvas);
+const textMaterial = new THREE.SpriteMaterial({ map: texture });
+const textSprite = new THREE.Sprite(textMaterial);
+textSprite.scale.set(10, 3, 1);
+textSprite.position.set(0, 8, 0);
+scene.add(textSprite);
 
-    // **Aggiunta del cubo traslatore fisso in basso a destra**
-    const cubeGeo = new THREE.BoxGeometry(10, 10, 10);
-    const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    cubeHelper = new THREE.Mesh(cubeGeo, cubeMat);
-    cubeHelper.position.set(80, -80, 0);
-    scene.add(cubeHelper);
+// ✅ Aggiunta del cubo traslatore
+const helperCube = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+);
+helperCube.position.set(5, 5, 0);
+scene.add(helperCube);
 
-    const light1 = new THREE.DirectionalLight(0xffffff, 1);
-    light1.position.set(1, 1, 1).normalize();
-    scene.add(light1);
-
-    const light2 = new THREE.AmbientLight(0x888888);
-    scene.add(light2);
-
-    animate();
-
-    document.getElementById('fileInput').addEventListener('change', handleFile);
-    document.getElementById('submitButton').addEventListener('click', handleSubmit);
+// Funzione per sincronizzare il cubo con la rotazione della camera
+function updateHelperCube() {
+    helperCube.quaternion.copy(camera.quaternion);
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
-
-function handleFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
+// ✅ Funzione per caricare modelli 3D
+function loadModel(file) {
     const reader = new FileReader();
-    reader.onload = function (e) {
-        const ext = file.name.split('.').pop().toLowerCase();
-        if (currentModel) scene.remove(currentModel);
+    reader.onload = function (event) {
+        const contents = event.target.result;
+        const fileName = file.name.toLowerCase();
 
-        if (ext === 'stl') {
-            const loader = new STLLoader();
-            const geometry = loader.parse(e.target.result);
-            geometry.computeVertexNormals();
-            geometry.computeBoundingBox();
+        // Rimuove solo i modelli esistenti senza eliminare le luci
+        scene.children = scene.children.filter(obj => obj.type !== "Mesh" && obj.type !== "Group");
 
-            const material = new THREE.MeshStandardMaterial({ color: 0x0077be });
-            const mesh = new THREE.Mesh(geometry, material);
-
-            mesh.position.set(0, 0, 0);
-            mesh.rotation.x = -Math.PI / 2;
-            scene.add(mesh);
-            currentModel = mesh;
-
-            centerModel(mesh);
-        } else if (ext === 'obj') {
-            const loader = new OBJLoader();
-            const object = loader.parse(e.target.result);
-            scene.add(object);
-            currentModel = object;
-        } else if (ext === 'glb' || ext === 'gltf') {
+        if (fileName.endsWith('.glb') || fileName.endsWith('.gltf')) {
             const loader = new GLTFLoader();
-            loader.parse(e.target.result, '', function (gltf) {
+            loader.parse(contents, '', function (gltf) {
                 scene.add(gltf.scene);
-                currentModel = gltf.scene;
             });
+        } else if (fileName.endsWith('.stl')) {
+            const loader = new STLLoader();
+            const geometry = loader.parse(contents);
+            geometry.computeVertexNormals();
+            const material = new THREE.MeshPhongMaterial({ color: 0xaaaaaa });
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+        } else if (fileName.endsWith('.obj')) {
+            const loader = new OBJLoader();
+            const text = new TextDecoder().decode(contents);
+            const object = loader.parse(text);
+            scene.add(object);
+        } else {
+            alert('Formato non supportato');
         }
     };
+    reader.readAsArrayBuffer(file);
+}
 
-    if (file.name.endsWith('.stl')) {
-        reader.readAsArrayBuffer(file);
-    } else {
-        reader.readAsText(file);
+// Caricamento di file dal computer
+document.getElementById('fileInput').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    if (file) {
+        loadModel(file);
     }
-}
+});
 
-// Funzione per centrare il modello nella scena
-function centerModel(model) {
-    const box = new THREE.Box3().setFromObject(model);
-    const center = box.getCenter(new THREE.Vector3());
-    model.position.sub(center);
+// ✅ Funzione di rendering
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateHelperCube();
+    renderer.render(scene, camera);
 }
+animate();
 
+// Assicura che il visualizzatore si adatti alla finestra quando viene ridimensionata
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ✅ Funzione per il preventivo con messaggio di avviso
 function handleSubmit() {
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const notes = document.getElementById('notes').value;
     const material = document.getElementById('material').value;
-    const finish = document.getElementById('finish').value;
-    const scale = parseFloat(document.getElementById('scale').value);
-    const quantity = parseInt(document.getElementById('quantity').value);
     const length = parseFloat(document.getElementById('length').value);
     const width = parseFloat(document.getElementById('width').value);
     const height = parseFloat(document.getElementById('height').value);
+    const quantity = parseInt(document.getElementById('quantity').value);
 
-    let volume = 0;
-    if (length && width && height) {
-        volume = (length * width * height) / 1000; // cm3
-    }
+    let volume = (length * width * height) / 1000; // cm3
 
     const pricePerCm3 = {
         PLA: 0.10,
@@ -136,14 +147,10 @@ function handleSubmit() {
 
     alert(`ATTENZIONE: Il preventivo è solo approssimativo e dovrà essere verificato dai tecnici.\n\nPrezzo stimato: €${estimatedPrice}`);
 
-    console.log('--- Preventivo Richiesto ---');
-    console.log('Nome:', name);
-    console.log('Email:', email);
-    console.log('Note:', notes);
     console.log('Materiale:', material);
-    console.log('Finitura:', finish);
-    console.log('Scala:', scale);
     console.log('Quantità:', quantity);
     console.log('Volume stimato (cm3):', volume);
     console.log('Prezzo stimato (€):', estimatedPrice);
 }
+
+document.getElementById('submitButton').addEventListener('click', handleSubmit);
