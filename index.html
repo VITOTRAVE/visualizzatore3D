@@ -24,7 +24,6 @@
     <div id="ui">
         <label for="fileInput">Carica file 3D (.stl, .obj, .gltf)</label>
         <input type="file" id="fileInput">
-
         <label for="material">Materiale</label>
         <select id="material">
             <option value="PLA">PLA</option>
@@ -35,31 +34,18 @@
             <option value="PEEK">PEEK</option>
             <option value="Metallo">Metallo</option>
         </select>
-
         <label for="length">Lunghezza (mm)</label>
         <input type="number" id="length" placeholder="es. 50">
-
         <label for="width">Larghezza (mm)</label>
         <input type="number" id="width" placeholder="es. 50">
-
         <label for="height">Altezza (mm)</label>
         <input type="number" id="height" placeholder="es. 50">
-
         <label for="quantity">Quantità</label>
         <input type="number" id="quantity" placeholder="es. 1" value="1">
-
         <button id="submitButton">Calcola preventivo</button>
     </div>
-
     <div id="container"></div>
 
-    <!-- Librerie -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/STLLoader.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/OBJLoader.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.min.js"></script>
-
-    <script type='module' src="visualizzatore.js"></script>
+    <script type="module" src="visualizzatore.js"></script>
 </body>
 </html>
