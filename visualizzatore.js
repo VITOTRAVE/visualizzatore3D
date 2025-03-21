@@ -3,7 +3,6 @@ import { OrbitControls } from 'https://cdn.skypack.dev/three/examples/jsm/contro
 import { STLLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/STLLoader';
 import { OBJLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/OBJLoader';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader';
-import { CSS2DRenderer } from 'https://cdn.skypack.dev/three/examples/jsm/renderers/CSS2DRenderer';
 
 let scene, camera, renderer, controls;
 let currentModel;
@@ -55,21 +54,30 @@ function handleFile(event) {
     if (ext === 'stl') {
       const loader = new STLLoader();
       const geometry = loader.parse(e.target.result);
+      geometry.computeVertexNormals();
+      geometry.computeBoundingBox();
+      
       const material = new THREE.MeshStandardMaterial({ color: 0x0077be });
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.geometry.computeBoundingBox();
-      currentModel = mesh;
+
+      mesh.position.set(0, 0, 0);
+      mesh.rotation.x = -Math.PI / 2; // Allinea correttamente il modello
       scene.add(mesh);
-    } else if (ext === 'obj') {
+      currentModel = mesh;
+      
+      centerModel(mesh);
+    } 
+    else if (ext === 'obj') {
       const loader = new OBJLoader();
       const object = loader.parse(e.target.result);
-      currentModel = object;
       scene.add(object);
-    } else if (ext === 'glb' || ext === 'gltf') {
+      currentModel = object;
+    } 
+    else if (ext === 'glb' || ext === 'gltf') {
       const loader = new GLTFLoader();
       loader.parse(e.target.result, '', function (gltf) {
+        scene.add(gltf.scene);
         currentModel = gltf.scene;
-        scene.add(currentModel);
       });
     }
   };
@@ -79,6 +87,13 @@ function handleFile(event) {
   } else {
     reader.readAsText(file);
   }
+}
+
+// Funzione per centrare il modello nella scena
+function centerModel(model) {
+  const box = new THREE.Box3().setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.sub(center);
 }
 
 function handleSubmit() {
@@ -98,8 +113,17 @@ function handleSubmit() {
     volume = (length * width * height) / 1000; // cm3
   }
 
-  const pricePerCm3 = 0.10;
-  const estimatedPrice = (volume * pricePerCm3 * quantity).toFixed(2);
+  const pricePerCm3 = {
+    PLA: 0.10,
+    ABS: 0.12,
+    PETG: 0.15,
+    Nylon: 0.20,
+    Carbonio: 0.35,
+    PEEK: 0.50,
+    Metallo: 1.00
+  };
+
+  const estimatedPrice = (volume * pricePerCm3[material] * quantity).toFixed(2);
 
   console.log('--- Preventivo Richiesto ---');
   console.log('Nome:', name);
