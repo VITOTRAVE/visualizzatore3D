@@ -1,29 +1,129 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizzatore 3D Professionale</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/STLLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+  <meta charset="UTF-8" />
+  <title>Atom Lab CAD 3D</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      color: red;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px white;
+    }
+
+    #controls {
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      max-height: 90%;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    label {
+      display: block;
+      margin-top: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 5px;
+    }
+
+    #submitButton {
+      margin-top: 10px;
+      background-color: #c00;
+      color: white;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #submitButton:hover {
+      background-color: #a00;
+    }
+  </style>
 </head>
 <body>
+  <div id="container">
+    <div id="overlay">Atom Lab CAD 3D</div>
+    <div id="controls">
+      <label>Carica Modello:
+        <input type="file" id="fileInput" />
+      </label>
 
-    <!-- Pulsante per caricare file -->
-    <input type="file" id="fileInput" accept=".glb, .gltf, .stl, .obj, .step">
-    <button id="measureBtn">Misura Distanza</button>
-    <input type="url" id="grabcadUrl" placeholder="Incolla link GrabCAD">
-    <button id="loadGrabcad">Carica Modello da GrabCAD</button>
-    <select id="exportFormat">
-        <option value="stl">STL</option>
-        <option value="obj">OBJ</option>
-        <option value="step">STEP</option>
-    </select>
-    <button id="exportModel">Esporta</button>
+      <label>Materiale:
+        <select id="material">
+          <option value="PLA">PLA</option>
+          <option value="ABS">ABS</option>
+          <option value="PETG">PETG</option>
+        </select>
+      </label>
 
-    <script src="visualizzatore.js"></script>
+      <label>Finitura:
+        <select id="finish">
+          <option value="Standard">Standard</option>
+          <option value="Lucida">Lucida</option>
+          <option value="Grezza">Grezza</option>
+        </select>
+      </label>
+
+      <label>Scala:
+        <input type="number" id="scale" step="0.01" value="1" />
+      </label>
+
+      <label>Quantità:
+        <input type="number" id="quantity" value="1" />
+      </label>
+
+      <label>Inserisci le dimensioni desiderate (mm):</label>
+      <label>Lunghezza:
+        <input type="number" id="length" />
+      </label>
+      <label>Larghezza:
+        <input type="number" id="width" />
+      </label>
+      <label>Altezza:
+        <input type="number" id="height" />
+      </label>
+
+      <label>Nome:
+        <input type="text" id="name" />
+      </label>
+
+      <label>Email:
+        <input type="email" id="email" />
+      </label>
+
+      <label>Note:
+        <textarea id="notes"></textarea>
+      </label>
+
+      <button id="submitButton">Invia Preventivo</button>
+    </div>
+  </div>
+
+  <script type="module" src="visualizzatore.js"></script>
 </body>
 </html>
