@@ -2,7 +2,7 @@ import * as THREE from 'https://cdn.skypack.dev/three@0.150.1';
 import { OrbitControls } from 'https://cdn.skypack.dev/three/examples/jsm/controls/OrbitControls';
 import { STLLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/STLLoader';
 import { OBJLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/OBJLoader';
-import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.146/examples/jsm/loaders/GLTFLoader.js';
 
 // Creazione della scena
 const scene = new THREE.Scene();
