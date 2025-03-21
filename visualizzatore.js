@@ -1,21 +1,33 @@
+// Importazione delle librerie necessarie (Three.js e controlli)
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/controls/OrbitControls.js';
+import { STLLoader } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/STLLoader.js';
+import { OBJLoader } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/OBJLoader.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/loaders/GLTFLoader.js';
+
+// Creazione della scena
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+// Creazione della camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 5, 10);
+
+// Creazione del renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xeeeeee);
 document.getElementById('container').appendChild(renderer.domElement);
 
 // Controlli orbitali
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-camera.position.set(0, 5, 10);
 
-// Griglia
+// Aggiunta della griglia
 const gridHelper = new THREE.GridHelper(100, 20, 0x666666, 0x444444);
 scene.add(gridHelper);
 
-// Luci
+// Aggiunta delle luci
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 5, 5);
 scene.add(directionalLight);
@@ -51,30 +63,30 @@ function updateHelperCube() {
     helperCube.quaternion.copy(camera.quaternion);
 }
 
-// Caricamento modelli
+// Funzione per il caricamento del modello 3D
 function loadModel(file) {
     const reader = new FileReader();
     reader.onload = function (event) {
         const contents = event.target.result;
         const fileName = file.name.toLowerCase();
 
-        // Rimuove mesh e gruppi precedenti
+        // Rimuove oggetti precedenti dalla scena
         scene.children = scene.children.filter(obj => !(obj.isMesh || obj.type === "Group"));
 
         if (fileName.endsWith('.glb') || fileName.endsWith('.gltf')) {
-            const loader = new THREE.GLTFLoader();
+            const loader = new GLTFLoader();
             loader.parse(contents, '', function (gltf) {
                 scene.add(gltf.scene);
             });
         } else if (fileName.endsWith('.stl')) {
-            const loader = new THREE.STLLoader();
+            const loader = new STLLoader();
             const geometry = loader.parse(contents);
             geometry.computeVertexNormals();
             const material = new THREE.MeshPhongMaterial({ color: 0xaaaaaa });
             const mesh = new THREE.Mesh(geometry, material);
             scene.add(mesh);
         } else if (fileName.endsWith('.obj')) {
-            const loader = new THREE.OBJLoader();
+            const loader = new OBJLoader();
             const text = new TextDecoder().decode(contents);
             const object = loader.parse(text);
             scene.add(object);
@@ -85,6 +97,7 @@ function loadModel(file) {
     reader.readAsArrayBuffer(file);
 }
 
+// Listener per il caricamento del file
 document.getElementById('fileInput').addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (file) {
@@ -92,6 +105,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
     }
 });
 
+// Animazione e rendering
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -100,21 +114,27 @@ function animate() {
 }
 animate();
 
+// Aggiornamento della finestra quando cambia la dimensione dello schermo
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Preventivo
+// Calcolo del preventivo
 document.getElementById('submitButton').addEventListener('click', function () {
     const material = document.getElementById('material').value;
     const length = parseFloat(document.getElementById('length').value);
     const width = parseFloat(document.getElementById('width').value);
     const height = parseFloat(document.getElementById('height').value);
     const quantity = parseInt(document.getElementById('quantity').value);
-    let volume = (length * width * height) / 1000; // cm3
 
+    if (isNaN(length) || isNaN(width) || isNaN(height) || isNaN(quantity) || quantity <= 0) {
+        alert("Inserisci valori validi per il calcolo.");
+        return;
+    }
+
+    let volume = (length * width * height) / 1000; // Convertito in cm³
     const pricePerCm3 = {
         PLA: 0.10,
         ABS: 0.12,
