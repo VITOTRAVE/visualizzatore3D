@@ -1,129 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <title>Atom Lab CAD 3D</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-
-    #container {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-    }
-
-    #overlay {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 10;
-      color: red;
-      font-size: 24px;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px white;
-    }
-
-    #controls {
-      position: absolute;
-      top: 50px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 14px;
-      max-height: 90%;
-      overflow-y: auto;
-      z-index: 10;
-    }
-
-    label {
-      display: block;
-      margin-top: 8px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 5px;
-    }
-
-    #submitButton {
-      margin-top: 10px;
-      background-color: #c00;
-      color: white;
-      padding: 8px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    #submitButton:hover {
-      background-color: #a00;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Atom Lab CAD 3D</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #container { width: 100vw; height: 100vh; display: block; }
+        #ui {
+            position: absolute; top: 10px; left: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px; border-radius: 8px; z-index: 10;
+        }
+        #ui label, #ui select, #ui input {
+            display: block; margin-bottom: 10px; width: 200px;
+        }
+        #submitButton {
+            background-color: red; color: white; padding: 10px;
+            border: none; border-radius: 5px; cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div id="container">
-    <div id="overlay">Atom Lab CAD 3D</div>
-    <div id="controls">
-      <label>Carica Modello:
-        <input type="file" id="fileInput" />
-      </label>
+    <div id="ui">
+        <label for="fileInput">Carica file 3D (.stl, .obj, .gltf)</label>
+        <input type="file" id="fileInput">
 
-      <label>Materiale:
+        <label for="material">Materiale</label>
         <select id="material">
-          <option value="PLA">PLA</option>
-          <option value="ABS">ABS</option>
-          <option value="PETG">PETG</option>
+            <option value="PLA">PLA</option>
+            <option value="ABS">ABS</option>
+            <option value="PETG">PETG</option>
+            <option value="Nylon">Nylon</option>
+            <option value="Carbonio">Carbonio</option>
+            <option value="PEEK">PEEK</option>
+            <option value="Metallo">Metallo</option>
         </select>
-      </label>
 
-      <label>Finitura:
-        <select id="finish">
-          <option value="Standard">Standard</option>
-          <option value="Lucida">Lucida</option>
-          <option value="Grezza">Grezza</option>
-        </select>
-      </label>
+        <label for="length">Lunghezza (mm)</label>
+        <input type="number" id="length" placeholder="es. 50">
 
-      <label>Scala:
-        <input type="number" id="scale" step="0.01" value="1" />
-      </label>
+        <label for="width">Larghezza (mm)</label>
+        <input type="number" id="width" placeholder="es. 50">
 
-      <label>Quantità:
-        <input type="number" id="quantity" value="1" />
-      </label>
+        <label for="height">Altezza (mm)</label>
+        <input type="number" id="height" placeholder="es. 50">
 
-      <label>Inserisci le dimensioni desiderate (mm):</label>
-      <label>Lunghezza:
-        <input type="number" id="length" />
-      </label>
-      <label>Larghezza:
-        <input type="number" id="width" />
-      </label>
-      <label>Altezza:
-        <input type="number" id="height" />
-      </label>
+        <label for="quantity">Quantità</label>
+        <input type="number" id="quantity" placeholder="es. 1" value="1">
 
-      <label>Nome:
-        <input type="text" id="name" />
-      </label>
-
-      <label>Email:
-        <input type="email" id="email" />
-      </label>
-
-      <label>Note:
-        <textarea id="notes"></textarea>
-      </label>
-
-      <button id="submitButton">Invia Preventivo</button>
+        <button id="submitButton">Calcola preventivo</button>
     </div>
-  </div>
 
-  <script type="module" src="visualizzatore.js"></script>
+    <div id="container"></div>
+
+    <!-- Librerie -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/STLLoader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/OBJLoader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.min.js"></script>
+
+    <script src="visualizzatore.js"></script>
 </body>
 </html>
