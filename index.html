@@ -29,6 +29,7 @@
       border-radius: 10px;
       font-size: 14px;
       z-index: 10;
+      max-width: 320px;
     }
     #language-select {
       position: absolute;
@@ -45,6 +46,9 @@
       height: 100vh;
       z-index: 0;
     }
+    canvas {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -55,10 +59,10 @@
   </select>
 
   <div id="form-container">
-    <label id="label-upload" for="fileInput">Carica modello:</label>
+    <label id="uploadLabel" for="fileInput">Carica modello:</label>
     <input type="file" id="fileInput"><br><br>
 
-    <label id="label-material" for="material">Materiale:</label>
+    <label id="materialLabel" for="material">Materiale:</label>
     <select id="material">
       <option>PLA</option>
       <option>ABS</option>
@@ -69,26 +73,26 @@
       <option>Metallo</option>
     </select><br><br>
 
-    <label id="label-finish" for="finish">Finitura:</label>
+    <label id="finishLabel" for="finish">Finitura:</label>
     <select id="finish">
       <option>Standard</option>
       <option>Lucida</option>
       <option>Ruvida</option>
     </select><br><br>
 
-    <label id="label-scale" for="scale">Scala:</label>
+    <label id="scaleLabel" for="scale">Scala:</label>
     <input type="number" id="scale" step="0.1" value="1"><br><br>
 
-    <label id="label-quantity" for="quantity">Quantità:</label>
+    <label id="quantityLabel" for="quantity">Quantità:</label>
     <input type="number" id="quantity" value="1"><br><br>
 
     <label id="label-dimensions">Misure (mm):</label><br>
     X: <input type="number" id="dimX"> Y: <input type="number" id="dimY"> Z: <input type="number" id="dimZ"><br><br>
 
-    <label id="label-email" for="email">Email:</label>
+    <label id="emailLabel" for="email">Email:</label>
     <input type="email" id="email"><br><br>
 
-    <button id="btn-estimate">Richiedi preventivo</button><br><br>
+    <input type="button" id="submitLabel" value="Richiedi preventivo"><br><br>
     <div id="note">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
   </div>
 
