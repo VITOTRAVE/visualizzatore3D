@@ -1,4 +1,4 @@
-// visualizzatore.js (versione migliorata bilingue + centering + controllo errore)
+// visualizzatore.js (versione aggiornata con cubo, griglia e bilingua)
 
 let scene, camera, renderer, controls;
 let currentObject = null;
@@ -12,7 +12,7 @@ const texts = {
         scaleLabel: "Scala:",
         quantityLabel: "Quantità:",
         emailLabel: "Email:",
-        estimateLabel: "Richiedi Preventivo",
+        estimateLabel: "Richiedi preventivo",
         note: "Il preventivo è indicativo e verrà confermato dai nostri tecnici."
     },
     en: {
@@ -28,15 +28,19 @@ const texts = {
 };
 
 function setLabels() {
-    document.getElementById("uploadLabel").textContent = texts[lang].uploadLabel;
-    document.getElementById("materialLabel").textContent = texts[lang].materialLabel;
-    document.getElementById("finishLabel").textContent = texts[lang].finishLabel;
-    document.getElementById("scaleLabel").textContent = texts[lang].scaleLabel;
-    document.getElementById("quantityLabel").textContent = texts[lang].quantityLabel;
-    document.getElementById("emailLabel").textContent = texts[lang].emailLabel;
-    document.getElementById("submitLabel").value = texts[lang].estimateLabel;
+    document.getElementById("label-upload").textContent = texts[lang].uploadLabel;
+    document.getElementById("label-material").textContent = texts[lang].materialLabel;
+    document.getElementById("label-finish").textContent = texts[lang].finishLabel;
+    document.getElementById("label-scale").textContent = texts[lang].scaleLabel;
+    document.getElementById("label-quantity").textContent = texts[lang].quantityLabel;
+    document.getElementById("label-email").textContent = texts[lang].emailLabel;
+    document.getElementById("btn-estimate").textContent = texts[lang].estimateLabel;
     document.getElementById("note").textContent = texts[lang].note;
 }
+
+document.getElementById("language-select").addEventListener("change", function () {
+    location.href = location.pathname + '?lang=' + this.value;
+});
 
 function init() {
     scene = new THREE.Scene();
@@ -53,6 +57,9 @@ function init() {
 
     const gridHelper = new THREE.GridHelper(200, 50);
     scene.add(gridHelper);
+
+    const axesHelper = new THREE.AxesHelper(50);
+    scene.add(axesHelper);
 
     animate();
 }
