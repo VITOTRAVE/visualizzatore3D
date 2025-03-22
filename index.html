@@ -1,15 +1,90 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <title>Atom Lab CAD 3D</title>
+  <meta charset="UTF-8">
+  <title>Atom Lab CAD 3D</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: red;
+      background: white;
+      padding: 8px;
+      border: 2px solid red;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 10;
+    }
+    #form-container {
+      position: absolute;
+      top: 60px;
+      left: 10px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 10;
+    }
+    #language-select {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      padding: 5px;
+    }
+  </style>
 </head>
 <body>
-    <div id="container">Caricamento...</div>
-    <script src="three/three.min.js"></script>
-    <script src="three/OrbitControls.js"></script>
-    <script src="three/STLLoader.js"></script>
-    <script src="visualizzatore.js"></script>
+  <div id="overlay">Atom Lab CAD 3D</div>
+  <select id="language-select">
+    <option value="it">Italiano</option>
+    <option value="en">English</option>
+  </select>
+  <div id="form-container">
+    <label id="label-upload" for="fileInput">Carica modello:</label>
+    <input type="file" id="fileInput"><br><br>
+
+    <label id="label-material" for="material">Materiale:</label>
+    <select id="material">
+      <option>PLA</option>
+      <option>ABS</option>
+      <option>PETG</option>
+      <option>Nylon</option>
+      <option>Carbonio</option>
+      <option>PEEK</option>
+      <option>Metallo</option>
+    </select><br><br>
+
+    <label id="label-scale" for="scale">Scala:</label>
+    <input type="number" id="scale" step="0.1" value="1"><br><br>
+
+    <label id="label-quantity" for="quantity">Quantità:</label>
+    <input type="number" id="quantity" value="1"><br><br>
+
+    <label id="label-dimensions">Misure (mm):</label><br>
+    X: <input type="number" id="dimX"> Y: <input type="number" id="dimY"> Z: <input type="number" id="dimZ"><br><br>
+
+    <label id="label-email" for="email">Email:</label>
+    <input type="email" id="email"><br><br>
+
+    <button onclick="calculateEstimate()" id="btn-estimate">Richiedi preventivo</button><br><br>
+    <div id="estimate-output"></div>
+  </div>
+
+  <script src="three/three.min.js"></script>
+  <script src="three/OrbitControls.js"></script>
+  <script src="three/STLLoader.js"></script>
+  <script src="three/OBJLoader.js"></script>
+  <script src="three/GLTFLoader.js"></script>
+  <script src="three/FBXLoader.js"></script>
+  <script src="three/3MFLoader.js"></script>
+  <script src="visualizzatore.js"></script>
 </body>
 </html>
+
