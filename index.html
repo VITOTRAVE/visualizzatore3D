@@ -1,50 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <title>Atom Lab CAD 3D</title>
-    <style>
-        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
-        #container { width: 100vw; height: 100vh; display: block; }
-        #ui {
-            position: absolute; top: 10px; left: 10px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 15px; border-radius: 8px; z-index: 10;
-        }
-        #ui label, #ui select, #ui input {
-            display: block; margin-bottom: 10px; width: 200px;
-        }
-        #submitButton {
-            background-color: red; color: white; padding: 10px;
-            border: none; border-radius: 5px; cursor: pointer;
-        }
-    </style>
 </head>
 <body>
-    <div id="ui">
-        <label for="fileInput">Carica file 3D (.stl, .obj, .gltf)</label>
-        <input type="file" id="fileInput">
-        <label for="material">Materiale</label>
-        <select id="material">
-            <option value="PLA">PLA</option>
-            <option value="ABS">ABS</option>
-            <option value="PETG">PETG</option>
-            <option value="Nylon">Nylon</option>
-            <option value="Carbonio">Carbonio</option>
-            <option value="PEEK">PEEK</option>
-            <option value="Metallo">Metallo</option>
-        </select>
-        <label for="length">Lunghezza (mm)</label>
-        <input type="number" id="length" placeholder="es. 50">
-        <label for="width">Larghezza (mm)</label>
-        <input type="number" id="width" placeholder="es. 50">
-        <label for="height">Altezza (mm)</label>
-        <input type="number" id="height" placeholder="es. 50">
-        <label for="quantity">Quantità</label>
-        <input type="number" id="quantity" placeholder="es. 1" value="1">
-        <button id="submitButton">Calcola preventivo</button>
-    </div>
-    <div id="container"></div>
-    <script type="module" src="visualizzatore.js"></script>
+    <div id="container">Caricamento...</div>
+    <script src="three/three.min.js"></script>
+    <script src="three/OrbitControls.js"></script>
+    <script src="three/STLLoader.js"></script>
+    <script src="visualizzatore.js"></script>
 </body>
 </html>
