@@ -1,8 +1,9 @@
-// visualizzatore.js (versione aggiornata con cubo, griglia e bilingua)
+// visualizzatore.js (versione corretta e aggiornata con fix)
 
 let scene, camera, renderer, controls;
 let currentObject = null;
-const lang = document.documentElement.lang || 'it';
+const urlParams = new URLSearchParams(window.location.search);
+const lang = urlParams.get('lang') || 'it';
 
 const texts = {
     it: {
@@ -51,7 +52,8 @@ function init() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('viewer').appendChild(renderer.domElement);
+    const viewer = document.getElementById('viewer');
+    if (viewer) viewer.appendChild(renderer.domElement);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
 
@@ -150,4 +152,4 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
 });
 
 setLabels();
-init();
+window.addEventListener('DOMContentLoaded', init);
