@@ -29,6 +29,7 @@
       border-radius: 10px;
       font-size: 14px;
       z-index: 10;
+      max-width: 300px;
     }
     #language-select {
       position: absolute;
@@ -50,6 +51,11 @@
       height: 60px;
       resize: vertical;
     }
+    .confirmation {
+      margin-top: 10px;
+      color: green;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -60,7 +66,7 @@
   </select>
 
   <div id="form-container">
-    <form id="orderForm" enctype="multipart/form-data" method="POST" action="https://script.google.com/macros/s/AKfycbzBGiopZrBHydFVie1EZnjPeWoWTEOFcm2zcrgAghZLWeWDE_S27eIr64zIM9ps8iJuIA/exec">
+    <form id="orderForm" enctype="multipart/form-data" method="POST" action="https://script.google.com/macros/s/AKfycbwpM62AiOWS1PamdGR-K9edfQDv7MuUh3JdaHyfsqZPNYUqGu_RpoGnQBR8BR9NjxV4gg/exec" target="hidden_iframe" onsubmit="document.getElementById('confirmation').style.display='block'">
       <label id="label-upload" for="fileInput">Carica modello:</label>
       <input type="file" id="fileInput" name="file" required><br><br>
 
@@ -114,7 +120,9 @@
 
       <button type="submit" id="btn-estimate">Invia la tua richiesta</button>
       <div id="note" style="margin-top:10px;">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
+      <div id="confirmation" class="confirmation" style="display:none;">Richiesta inviata con successo!</div>
     </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
   </div>
 
   <div id="viewer"></div>
