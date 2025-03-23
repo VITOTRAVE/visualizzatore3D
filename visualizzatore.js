@@ -1,4 +1,4 @@
-// visualizzatore.js (con cubo traslatore fisso, misure e modulo d'ordine)
+// visualizzatore.js (con cubo traslatore fisso, misure e modulo d'ordine con allegati)
 
 let scene, camera, renderer, controls;
 let cubeScene, cubeCamera, cubeRenderer;
@@ -73,17 +73,17 @@ function init() {
     // Mini-cube scene in alto a destra
     cubeScene = new THREE.Scene();
     cubeCamera = new THREE.PerspectiveCamera(50, 1, 1, 1000);
-    cubeCamera.up = camera.up; // stessa orientazione della camera principale
+    cubeCamera.up = camera.up;
     cubeCamera.position.z = 5;
 
     const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
     const cubeMat = [
-        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // right
-        new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // left
-        new THREE.MeshBasicMaterial({ color: 0x0000ff }), // top
-        new THREE.MeshBasicMaterial({ color: 0xffff00 }), // bottom
-        new THREE.MeshBasicMaterial({ color: 0x00ffff }), // front
-        new THREE.MeshBasicMaterial({ color: 0xff00ff })  // back
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+        new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+        new THREE.MeshBasicMaterial({ color: 0xffff00 }),
+        new THREE.MeshBasicMaterial({ color: 0x00ffff }),
+        new THREE.MeshBasicMaterial({ color: 0xff00ff })
     ];
     const cubeMesh = new THREE.Mesh(cubeGeo, cubeMat);
     cubeScene.add(cubeMesh);
@@ -101,9 +101,7 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-
     renderer.render(scene, camera);
-
     cubeCamera.quaternion.copy(camera.quaternion);
     cubeRenderer.render(cubeScene, cubeCamera);
 }
@@ -161,6 +159,16 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
     if (file) {
         loadModel(file);
     }
+});
+
+document.getElementById('orderForm').addEventListener('submit', function (e) {
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files.length) {
+        alert("Devi caricare un file per inviare l'ordine!");
+        e.preventDefault();
+        return false;
+    }
+    document.getElementById('confirmation').style.display = 'block';
 });
 
 setLabels();
