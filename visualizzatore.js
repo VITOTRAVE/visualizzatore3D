@@ -1,4 +1,4 @@
-// visualizzatore.js (con cubo traslatore fisso e sincronizzato con la camera)
+// visualizzatore.js (con cubo traslatore fisso, misure e modulo d'ordine)
 
 let scene, camera, renderer, controls;
 let cubeScene, cubeCamera, cubeRenderer;
@@ -13,6 +13,8 @@ const texts = {
         finishLabel: "Finitura:",
         scaleLabel: "Scala:",
         quantityLabel: "Quantità:",
+        nameLabel: "Nome e Cognome:",
+        phoneLabel: "Telefono:",
         emailLabel: "Email:",
         estimateLabel: "Richiedi preventivo",
         note: "Il preventivo è indicativo e verrà confermato dai nostri tecnici."
@@ -23,6 +25,8 @@ const texts = {
         finishLabel: "Finish:",
         scaleLabel: "Scale:",
         quantityLabel: "Quantity:",
+        nameLabel: "Full Name:",
+        phoneLabel: "Phone:",
         emailLabel: "Email:",
         estimateLabel: "Request Quote",
         note: "The estimate is indicative and will be confirmed by our technicians."
@@ -35,6 +39,8 @@ function setLabels() {
     document.getElementById("label-finish").textContent = texts[lang].finishLabel;
     document.getElementById("label-scale").textContent = texts[lang].scaleLabel;
     document.getElementById("label-quantity").textContent = texts[lang].quantityLabel;
+    document.getElementById("label-name").textContent = texts[lang].nameLabel;
+    document.getElementById("label-phone").textContent = texts[lang].phoneLabel;
     document.getElementById("label-email").textContent = texts[lang].emailLabel;
     document.getElementById("btn-estimate").textContent = texts[lang].estimateLabel;
     document.getElementById("note").textContent = texts[lang].note;
@@ -98,7 +104,7 @@ function animate() {
 
     renderer.render(scene, camera);
 
-    cubeCamera.quaternion.copy(camera.quaternion); // sincronia camera principale
+    cubeCamera.quaternion.copy(camera.quaternion);
     cubeRenderer.render(cubeScene, cubeCamera);
 }
 
@@ -108,9 +114,14 @@ function centerObject(object) {
     object.position.sub(center);
 
     const size = box.getSize(new THREE.Vector3());
-    document.getElementById("dimX").value = size.x.toFixed(2);
-    document.getElementById("dimY").value = size.y.toFixed(2);
-    document.getElementById("dimZ").value = size.z.toFixed(2);
+    const unit = document.getElementById("unitSelect").value;
+    let factor = 1;
+    if (unit === "cm") factor = 0.1;
+    if (unit === "inch") factor = 0.03937;
+
+    document.getElementById("dimX").value = (size.x * factor).toFixed(2);
+    document.getElementById("dimY").value = (size.y * factor).toFixed(2);
+    document.getElementById("dimZ").value = (size.z * factor).toFixed(2);
 }
 
 function loadModel(file) {
