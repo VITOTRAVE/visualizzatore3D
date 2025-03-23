@@ -1,4 +1,4 @@
-// visualizzatore.js (con cubo traslatore fisso, misure e modulo d'ordine con allegati)
+// visualizzatore.js (con invio file STL in allegato)
 
 let scene, camera, renderer, controls;
 let cubeScene, cubeCamera, cubeRenderer;
@@ -16,7 +16,7 @@ const texts = {
         nameLabel: "Nome e Cognome:",
         phoneLabel: "Telefono:",
         emailLabel: "Email:",
-        estimateLabel: "Richiedi preventivo",
+        estimateLabel: "Invia la tua richiesta",
         note: "Il preventivo è indicativo e verrà confermato dai nostri tecnici."
     },
     en: {
@@ -28,7 +28,7 @@ const texts = {
         nameLabel: "Full Name:",
         phoneLabel: "Phone:",
         emailLabel: "Email:",
-        estimateLabel: "Request Quote",
+        estimateLabel: "Submit your request",
         note: "The estimate is indicative and will be confirmed by our technicians."
     }
 };
@@ -70,7 +70,7 @@ function init() {
     const axesHelper = new THREE.AxesHelper(50);
     scene.add(axesHelper);
 
-    // Mini-cube scene in alto a destra
+    // Mini-cube scene
     cubeScene = new THREE.Scene();
     cubeCamera = new THREE.PerspectiveCamera(50, 1, 1, 1000);
     cubeCamera.up = camera.up;
@@ -128,9 +128,7 @@ function loadModel(file) {
         const contents = event.target.result;
         const extension = file.name.split('.').pop().toLowerCase();
 
-        if (currentObject) {
-            scene.remove(currentObject);
-        }
+        if (currentObject) scene.remove(currentObject);
 
         try {
             switch (extension) {
@@ -150,7 +148,6 @@ function loadModel(file) {
             alert('Errore nel caricamento del file: ' + error.message);
         }
     };
-
     reader.readAsArrayBuffer(file);
 }
 
@@ -162,13 +159,31 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
 });
 
 document.getElementById('orderForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
     const fileInput = document.getElementById('fileInput');
     if (!fileInput.files.length) {
         alert("Devi caricare un file per inviare l'ordine!");
-        e.preventDefault();
-        return false;
+        return;
     }
-    document.getElementById('confirmation').style.display = 'block';
+
+    const form = document.getElementById('orderForm');
+    const formData = new FormData(form);
+    formData.append("file", fileInput.files[0]);
+
+    fetch("https://script.google.com/macros/s/AKfycbwpM62AiOWS1PamdGR-K9edfQDv7MuUh3JdaHyfsqZPNYUqGu_RpoGnQBR8BR9NjxV4gg/exec", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('confirmation').style.display = 'block';
+        console.log("Successo:", data);
+    })
+    .catch(error => {
+        alert("Errore nell'invio dell'ordine");
+        console.error("Errore:", error);
+    });
 });
 
 setLabels();

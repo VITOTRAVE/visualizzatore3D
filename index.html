@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <title>Atom Lab CAD 3D</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
+    body { margin: 0; font-family: Arial, sans-serif; }
     #overlay {
       position: absolute;
       top: 10px;
@@ -29,7 +26,6 @@
       border-radius: 10px;
       font-size: 14px;
       z-index: 10;
-      max-width: 300px;
     }
     #language-select {
       position: absolute;
@@ -46,15 +42,18 @@
       height: 100vh;
       z-index: 0;
     }
-    textarea {
-      width: 100%;
-      height: 60px;
-      resize: vertical;
-    }
-    .confirmation {
-      margin-top: 10px;
-      color: green;
+    #confirmation {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      padding: 10px;
+      border-radius: 5px;
       font-weight: bold;
+      z-index: 20;
     }
   </style>
 </head>
@@ -66,7 +65,7 @@
   </select>
 
   <div id="form-container">
-    <form id="orderForm" enctype="multipart/form-data" method="POST" action="https://script.google.com/macros/s/AKfycbwpM62AiOWS1PamdGR-K9edfQDv7MuUh3JdaHyfsqZPNYUqGu_RpoGnQBR8BR9NjxV4gg/exec" target="hidden_iframe" onsubmit="document.getElementById('confirmation').style.display='block'">
+    <form id="orderForm">
       <label id="label-upload" for="fileInput">Carica modello:</label>
       <input type="file" id="fileInput" name="file" required><br><br>
 
@@ -101,41 +100,34 @@
       <label id="label-quantity" for="quantity">Quantità:</label>
       <input type="number" id="quantity" name="quantity" value="1"><br><br>
 
-      <label id="label-dimensions">Misure:</label><br>
-      X: <input type="number" id="dimX" readonly name="dimX">
-      Y: <input type="number" id="dimY" readonly name="dimY">
-      Z: <input type="number" id="dimZ" readonly name="dimZ"><br><br>
+      <label>Misure (mm):</label><br>
+      X: <input type="number" id="dimX" name="dimX">
+      Y: <input type="number" id="dimY" name="dimY">
+      Z: <input type="number" id="dimZ" name="dimZ"><br><br>
 
       <label id="label-name" for="name">Nome e Cognome:</label>
       <input type="text" id="name" name="name" required><br><br>
 
       <label id="label-phone" for="phone">Telefono:</label>
-      <input type="tel" id="phone" name="phone" required><br><br>
+      <input type="text" id="phone" name="phone" required><br><br>
 
       <label id="label-email" for="email">Email:</label>
       <input type="email" id="email" name="email" required><br><br>
 
-      <label for="notes">Note descrittive dell'ordine:</label><br>
-      <textarea id="notes" name="notes" placeholder="Inserisci eventuali specifiche tecniche, preferenze CNC o FDM, ecc..."></textarea><br><br>
+      <label for="notes">Note:</label><br>
+      <textarea id="notes" name="notes" rows="4" cols="35"></textarea><br><br>
 
-      <button type="submit" id="btn-estimate">Invia la tua richiesta</button>
-      <div id="note" style="margin-top:10px;">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
-      <div id="confirmation" class="confirmation" style="display:none;">Richiesta inviata con successo!</div>
+      <button id="btn-estimate" type="submit">Invia la tua richiesta</button><br><br>
     </form>
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
+    <div id="note">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
   </div>
 
   <div id="viewer"></div>
+  <div id="confirmation">Richiesta inviata con successo!</div>
 
   <script src="three/three.min.js"></script>
   <script src="three/OrbitControls.js"></script>
   <script src="three/STLLoader.js"></script>
-  <script src="three/OBJLoader.js"></script>
-  <script src="three/GLTFLoader.js"></script>
-  <script src="three/FBXLoader.js"></script>
-  <script src="three/3MFLoader.js"></script>
-  <script src="three/PLYLoader.js"></script>
-  <script src="three/SVGLoader.js"></script>
   <script src="visualizzatore.js"></script>
 </body>
 </html>
