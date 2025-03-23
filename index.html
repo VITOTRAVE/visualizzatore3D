@@ -45,6 +45,11 @@
       height: 100vh;
       z-index: 0;
     }
+    textarea {
+      width: 100%;
+      height: 60px;
+      resize: vertical;
+    }
   </style>
 </head>
 <body>
@@ -55,54 +60,61 @@
   </select>
 
   <div id="form-container">
-    <label id="label-upload" for="fileInput">Carica modello:</label>
-    <input type="file" id="fileInput"><br><br>
+    <form id="orderForm">
+      <label id="label-upload" for="fileInput">Carica modello:</label>
+      <input type="file" id="fileInput" name="file"><br><br>
 
-    <label id="label-material" for="material">Materiale:</label>
-    <select id="material">
-      <option>PLA</option>
-      <option>ABS</option>
-      <option>PETG</option>
-      <option>Nylon</option>
-      <option>Carbonio</option>
-      <option>PEEK</option>
-      <option>Metallo</option>
-    </select><br><br>
+      <label id="label-material" for="material">Materiale:</label>
+      <select id="material" name="material">
+        <option>PLA</option>
+        <option>ABS</option>
+        <option>PETG</option>
+        <option>Nylon</option>
+        <option>Carbonio</option>
+        <option>PEEK</option>
+        <option>Metallo</option>
+      </select><br><br>
 
-    <label id="label-finish" for="finish">Finitura:</label>
-    <select id="finish">
-      <option>Standard</option>
-      <option>Lucida</option>
-      <option>Ruvida</option>
-    </select><br><br>
+      <label id="label-finish" for="finish">Finitura:</label>
+      <select id="finish" name="finish">
+        <option>Standard</option>
+        <option>Lucida</option>
+        <option>Ruvida</option>
+      </select><br><br>
 
-    <label id="label-scale" for="scale">Scala:</label>
-    <input type="number" id="scale" step="0.1" value="1"><br><br>
+      <label id="label-scale" for="scale">Scala:</label>
+      <input type="number" id="scale" name="scale" step="0.1" value="1"><br><br>
 
-    <label for="unitSelect">Unità di misura:</label>
-    <select id="unitSelect">
-      <option value="mm">mm</option>
-      <option value="cm">cm</option>
-      <option value="inch">inch</option>
-    </select><br><br>
+      <label for="unitSelect">Unità di misura:</label>
+      <select id="unitSelect" name="unit">
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="inch">inch</option>
+      </select><br><br>
 
-    <label id="label-quantity" for="quantity">Quantità:</label>
-    <input type="number" id="quantity" value="1"><br><br>
+      <label id="label-quantity" for="quantity">Quantità:</label>
+      <input type="number" id="quantity" name="quantity" value="1"><br><br>
 
-    <label id="label-dimensions">Misure (mm):</label><br>
-    X: <input type="number" id="dimX"> Y: <input type="number" id="dimY"> Z: <input type="number" id="dimZ"><br><br>
+      <label id="label-dimensions">Misure:</label><br>
+      X: <input type="number" id="dimX" readonly name="dimX">
+      Y: <input type="number" id="dimY" readonly name="dimY">
+      Z: <input type="number" id="dimZ" readonly name="dimZ"><br><br>
 
-    <label id="label-name" for="name">Nome e Cognome:</label>
-    <input type="text" id="name"><br><br>
+      <label id="label-name" for="name">Nome e Cognome:</label>
+      <input type="text" id="name" name="name"><br><br>
 
-    <label id="label-phone" for="phone">Telefono:</label>
-    <input type="tel" id="phone"><br><br>
+      <label id="label-phone" for="phone">Telefono:</label>
+      <input type="tel" id="phone" name="phone"><br><br>
 
-    <label id="label-email" for="email">Email:</label>
-    <input type="email" id="email"><br><br>
+      <label id="label-email" for="email">Email:</label>
+      <input type="email" id="email" name="email"><br><br>
 
-    <button id="btn-estimate">Richiedi preventivo</button><br><br>
-    <div id="note">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
+      <label for="notes">Note descrittive dell'ordine:</label><br>
+      <textarea id="notes" name="notes" placeholder="Inserisci eventuali specifiche tecniche, preferenze CNC o FDM, ecc..."></textarea><br><br>
+
+      <button type="submit" id="btn-estimate">Richiedi preventivo</button>
+      <div id="note" style="margin-top:10px;">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
+    </form>
   </div>
 
   <div id="viewer"></div>
@@ -117,5 +129,32 @@
   <script src="three/PLYLoader.js"></script>
   <script src="three/SVGLoader.js"></script>
   <script src="visualizzatore.js"></script>
+
+  <script>
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const body = new URLSearchParams();
+      for (const pair of formData.entries()) {
+        body.append(pair[0], pair[1]);
+      }
+
+      fetch("https://formsubmit.co/ajax/vitotraversa67@gmail.com", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString()
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert("Richiesta inviata con successo!");
+        document.getElementById("orderForm").reset();
+      })
+      .catch(error => {
+        alert("Errore durante l'invio della richiesta.");
+        console.error(error);
+      });
+    });
+  </script>
 </body>
 </html>
