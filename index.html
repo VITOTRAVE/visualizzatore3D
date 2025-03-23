@@ -60,7 +60,7 @@
   </select>
 
   <div id="form-container">
-    <form id="orderForm" enctype="multipart/form-data">
+    <form id="orderForm" enctype="multipart/form-data" method="POST" action="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
       <label id="label-upload" for="fileInput">Carica modello:</label>
       <input type="file" id="fileInput" name="file" required><br><br>
 
@@ -101,18 +101,18 @@
       Z: <input type="number" id="dimZ" readonly name="dimZ"><br><br>
 
       <label id="label-name" for="name">Nome e Cognome:</label>
-      <input type="text" id="name" name="name"><br><br>
+      <input type="text" id="name" name="name" required><br><br>
 
       <label id="label-phone" for="phone">Telefono:</label>
-      <input type="tel" id="phone" name="phone"><br><br>
+      <input type="tel" id="phone" name="phone" required><br><br>
 
       <label id="label-email" for="email">Email:</label>
-      <input type="email" id="email" name="email"><br><br>
+      <input type="email" id="email" name="email" required><br><br>
 
       <label for="notes">Note descrittive dell'ordine:</label><br>
       <textarea id="notes" name="notes" placeholder="Inserisci eventuali specifiche tecniche, preferenze CNC o FDM, ecc..."></textarea><br><br>
 
-      <button type="submit" id="btn-estimate">Richiedi preventivo</button>
+      <button type="submit" id="btn-estimate">Invia la tua richiesta</button>
       <div id="note" style="margin-top:10px;">Il preventivo è indicativo e verrà confermato dai nostri tecnici.</div>
     </form>
   </div>
@@ -129,30 +129,5 @@
   <script src="three/PLYLoader.js"></script>
   <script src="three/SVGLoader.js"></script>
   <script src="visualizzatore.js"></script>
-
-  <script>
-    document.getElementById("orderForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const formData = new FormData(this);
-
-      fetch("https://formsubmit.co/vitotraversa67@gmail.com", {
-        method: "POST",
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          alert("Richiesta inviata con successo!");
-          document.getElementById("orderForm").reset();
-        } else {
-          throw new Error("Errore nella risposta del server");
-        }
-      })
-      .catch(error => {
-        alert("Errore durante l'invio della richiesta.");
-        console.error(error);
-      });
-    });
-  </script>
 </body>
 </html>
