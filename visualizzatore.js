@@ -1,6 +1,7 @@
-// visualizzatore.js (versione corretta e aggiornata con fix)
+// visualizzatore.js (con cubo traslatore fisso e sincronizzato con la camera)
 
 let scene, camera, renderer, controls;
+let cubeScene, cubeCamera, cubeRenderer;
 let currentObject = null;
 const urlParams = new URLSearchParams(window.location.search);
 const lang = urlParams.get('lang') || 'it';
@@ -63,18 +64,53 @@ function init() {
     const axesHelper = new THREE.AxesHelper(50);
     scene.add(axesHelper);
 
+    // Mini-cube scene in alto a destra
+    cubeScene = new THREE.Scene();
+    cubeCamera = new THREE.PerspectiveCamera(50, 1, 1, 1000);
+    cubeCamera.up = camera.up; // stessa orientazione della camera principale
+    cubeCamera.position.z = 5;
+
+    const cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+    const cubeMat = [
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // right
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // left
+        new THREE.MeshBasicMaterial({ color: 0x0000ff }), // top
+        new THREE.MeshBasicMaterial({ color: 0xffff00 }), // bottom
+        new THREE.MeshBasicMaterial({ color: 0x00ffff }), // front
+        new THREE.MeshBasicMaterial({ color: 0xff00ff })  // back
+    ];
+    const cubeMesh = new THREE.Mesh(cubeGeo, cubeMat);
+    cubeScene.add(cubeMesh);
+
+    cubeRenderer = new THREE.WebGLRenderer({ alpha: true });
+    cubeRenderer.setSize(100, 100);
+    cubeRenderer.domElement.style.position = "absolute";
+    cubeRenderer.domElement.style.top = "10px";
+    cubeRenderer.domElement.style.right = "10px";
+    cubeRenderer.domElement.style.zIndex = "20";
+    document.body.appendChild(cubeRenderer.domElement);
+
     animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
+
     renderer.render(scene, camera);
+
+    cubeCamera.quaternion.copy(camera.quaternion); // sincronia camera principale
+    cubeRenderer.render(cubeScene, cubeCamera);
 }
 
 function centerObject(object) {
     const box = new THREE.Box3().setFromObject(object);
     const center = box.getCenter(new THREE.Vector3());
     object.position.sub(center);
+
+    const size = box.getSize(new THREE.Vector3());
+    document.getElementById("dimX").value = size.x.toFixed(2);
+    document.getElementById("dimY").value = size.y.toFixed(2);
+    document.getElementById("dimZ").value = size.z.toFixed(2);
 }
 
 function loadModel(file) {
@@ -95,37 +131,6 @@ function loadModel(file) {
                     const material = new THREE.MeshNormalMaterial();
                     currentObject = new THREE.Mesh(geometry, material);
                     break;
-                case 'obj':
-                    const objLoader = new THREE.OBJLoader();
-                    currentObject = objLoader.parse(new TextDecoder().decode(contents));
-                    break;
-                case 'gltf':
-                case 'glb':
-                    const gltfLoader = new THREE.GLTFLoader();
-                    gltfLoader.parse(contents, '', (gltf) => {
-                        currentObject = gltf.scene;
-                        centerObject(currentObject);
-                        scene.add(currentObject);
-                    });
-                    return;
-                case 'fbx':
-                    const fbxLoader = new THREE.FBXLoader();
-                    currentObject = fbxLoader.parse(contents);
-                    break;
-                case '3mf':
-                    const mfLoader = new THREE.ThreeMFLoader();
-                    currentObject = mfLoader.parse(contents);
-                    break;
-                case 'svg':
-                    const svgLoader = new THREE.SVGLoader();
-                    currentObject = svgLoader.parse(new TextDecoder().decode(contents));
-                    break;
-                case 'ply':
-                    const plyLoader = new THREE.PLYLoader();
-                    const plyGeometry = plyLoader.parse(contents);
-                    const plyMaterial = new THREE.MeshNormalMaterial();
-                    currentObject = new THREE.Mesh(plyGeometry, plyMaterial);
-                    break;
                 default:
                     alert('Formato non supportato');
                     return;
@@ -137,11 +142,7 @@ function loadModel(file) {
         }
     };
 
-    if (["obj", "svg"].includes(file.name.split('.').pop().toLowerCase())) {
-        reader.readAsText(file);
-    } else {
-        reader.readAsArrayBuffer(file);
-    }
+    reader.readAsArrayBuffer(file);
 }
 
 document.getElementById('fileInput').addEventListener('change', (event) => {
